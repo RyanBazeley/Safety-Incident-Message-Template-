@@ -43,17 +43,18 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px 10px; /* Taller boxes */
+            /* CRITICAL FIX: Maximize padding for full visibility within the grey box */
+            padding: 14px 10px; 
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box; 
-            line-height: 1.4em; /* Prevents text clipping */
+            line-height: 1.4em; /* Ensures text and selection are fully visible */
         }
 
-        /* TARGETING TEXT AREAS (TM injury description) */
+        /* TARGETING TEXT AREAS */
         .form-group textarea {
             resize: vertical;
-            min-height: 120px; /* Large Text box */
+            min-height: 120px; 
         }
 
         /* TARGETING SMALL TEXT INPUTS */
@@ -209,7 +210,8 @@
                         // Check if adding this element will exceed the remaining space on the page
                         const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
                         
-                        if (cursorY + imgHeight + 30 > maxPageY) { // ADD 30MM BUFFER CHECK HERE
+                        // Use a 30mm buffer check to ensure we break early enough
+                        if (cursorY + imgHeight + 30 > maxPageY) { 
                             pdf.addPage();
                             cursorY = margin; // Reset cursor to top of new page
                         }
@@ -218,7 +220,7 @@
                         pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
                         
                         // Move cursor down for the next element, PLUS the 30MM buffer
-                        cursorY += imgHeight + 20; 
+                        cursorY += imgHeight + 30; 
 
                         elementsProcessed++;
                         // 3. When the last element is processed, save the PDF
