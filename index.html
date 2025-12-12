@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Incident Message Template</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select,
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; 
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Green for safety theme */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #1e7e34;
+        }
+        /* The .italian-box style is now redundant but kept for cleanliness, 
+           as the HTML element itself has been removed. 
+        .italian-box {
+            border: 1px solid #dc3545; 
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+        }
+        */
+    </style>
+</head>
+<body>
+
+    <div class="container" id="survey-content">
+        <h1>Safety Incident Message Template</h1>
+        
+        <div class="form-group">
+            <label for="store-number">Store number:</label>
+            <input type="text" id="store-number" placeholder="Enter store number">
+        </div>
+
+        <div class="form-group">
+            <label for="injury-description"><strong>TM injury description:</strong></label>
+            <textarea id="injury-description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="tm-name">Team member name:</label>
+            <input type="text" id="tm-name">
+        </div>
+
+        <div class="form-group">
+            <label for="department">Department:</label>
+            <select id="department">
+                <option value="">Select Department</option>
+                <option value="GR">GR</option>
+                <option value="DY">DY</option>
+                <option value="OL">OL</option>
+                <option value="SV">SV</option>
+                <option value="FV">FV</option>
+                <option value="DL">DL</option>
+                <option value="MT">MT</option>
+                <option value="BH">BH</option>
+                <option value="OH">OH</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="tm-position"><strong>Team member Position:</strong></label>
+            <select id="tm-position">
+                <option value="">Select Position</option>
+                <option value="Team member">Team member</option>
+                <option value="Department manager">Department manager</option>
+                <option value="Store support manager">Store support manager</option>
+                <option value="Store manager">Store manager</option>
+                <option value="Coles services team member">Coles services team member</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="date-incident">Date of Incident / Injury:</label>
+            <input type="date" id="date-incident">
+        </div>
+
+        <div class="form-group">
+            <label for="time-incident">Time of incident / injury:</label>
+            <input type="time" id="time-incident">
+        </div>
+
+        <div class="form-group">
+            <label for="date-report">Date of report /injury:</label>
+            <input type="date" id="date-report">
+        </div>
+
+        <div class="form-group">
+            <label for="injury-details"><strong>Injury:</strong></label>
+            <textarea id="injury-details"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="first-aid"><strong>First aid?</strong></label>
+            <select id="first-aid">
+                <option value="">Select Option</option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+                <option value="n/a">n/a</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
+            <select id="nurse-called">
+                <option value="">Select Option</option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+                <option value="n/a">n/a</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="incident-review"><strong>Incident Review:</strong></label>
+            <textarea id="incident-review"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="sequence-events"><strong>Sequence of events:</strong></label>
+            <textarea id="sequence-events"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="make-safe"><strong>What can we do to make safe immediately?</strong></label>
+            <textarea id="make-safe"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
+            <select id="swp-up-to-date">
+                <option value="">Select Option</option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
+            <select id="training-up-to-date">
+                <option value="">Select Option</option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
+            <select id="correct-ppe">
+                <option value="">Select Option</option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+            </select>
+        </div>
+        
+        <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
+
+    </div>
+
+    <script>
+        function exportToPDF() {
+            // Check if jsPDF and html2canvas are available
+            if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
+                alert("PDF export libraries are still missing. Please ensure the internet connection is stable or try the browser's native print function.");
+                window.print();
+                return;
+            }
+
+            const element = document.getElementById('survey-content');
+            
+            // Temporarily hide the button before converting to PDF
+            const button = document.querySelector('.submit-btn');
+            button.style.display = 'none';
+
+            // Convert the HTML content to a canvas image
+            html2canvas(element, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                const imgProps= pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                // Calculate height to maintain aspect ratio
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; 
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save("Safety_Incident_Report.pdf");
+                
+                // Restore the button after conversion
+                button.style.display = 'block';
+            });
+        }
+    </script>
+
+</body>
+</html>
