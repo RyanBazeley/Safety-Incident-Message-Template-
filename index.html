@@ -66,37 +66,49 @@
             background-color: #1e7e34;
         }
         
-        /* FINAL CSS FIXES: Removed ineffective page-break rules, keeping simple margins */
+        /* CSS FIX: Ensures elements have standard spacing */
         .form-group {
             margin-top: 25px; 
             margin-bottom: 15px; 
         }
         
-        #pdf-capture-area {
-            padding-top: 25px; 
-            padding-bottom: 50px; 
+        /* Ensures the sections are visible and structured for capture */
+        .pdf-page-section {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            /* Add a line to visually separate sections on the web page, remove if not needed */
+            border-bottom: 1px dashed #ccc; 
+        }
+        
+        /* Hides the border on the last section */
+        .pdf-page-section:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
 <body>
 
     <div class="container" id="survey-content">
-        <div id="pdf-capture-area"> 
+        
+        <h1>Safety Incident Message Template</h1>
 
-            <h1>Safety Incident Message Template</h1>
+        <div class="pdf-page-section">
             
             <div class="form-group">
                 <label for="store-number">Store number:</label>
                 <input type="text" id="store-number" placeholder="Enter store number">
             </div>
+
             <div class="form-group">
                 <label for="injury-description"><strong>TM injury description:</strong></label>
                 <textarea id="injury-description"></textarea>
             </div>
+
             <div class="form-group">
                 <label for="tm-name">Team member name:</label>
                 <input type="text" id="tm-name">
             </div>
+
             <div class="form-group">
                 <label for="department">Department:</label>
                 <select id="department">
@@ -112,6 +124,7 @@
                     <option value="OH">OH</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="tm-position"><strong>Team member Position:</strong></label>
                 <select id="tm-position">
@@ -123,22 +136,28 @@
                     <option value="Coles services team member">Coles services team member</option>
                 </select>
             </div>
+        </div>
+        <div class="pdf-page-section">
             <div class="form-group">
                 <label for="date-incident">Date of Incident / Injury:</label>
                 <input type="date" id="date-incident">
             </div>
+
             <div class="form-group">
                 <label for="time-incident">Time of incident / injury:</label>
                 <input type="time" id="time-incident">
             </div>
+
             <div class="form-group">
                 <label for="date-report">Date of report /injury:</label>
                 <input type="date" id="date-report">
             </div>
+
             <div class="form-group">
                 <label for="injury-details"><strong>Injury:</strong></label>
                 <textarea id="injury-details"></textarea>
             </div>
+
             <div class="form-group">
                 <label for="first-aid"><strong>First aid?</strong></label>
                 <select id="first-aid">
@@ -148,6 +167,7 @@
                     <option value="n/a">n/a</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
                 <select id="nurse-called">
@@ -157,18 +177,23 @@
                     <option value="n/a">n/a</option>
                 </select>
             </div>
+        </div>
+        <div class="pdf-page-section">
             <div class="form-group">
                 <label for="incident-review"><strong>Incident Review:</strong></label>
                 <textarea id="incident-review"></textarea>
             </div>
+
             <div class="form-group">
                 <label for="sequence-events"><strong>Sequence of events:</strong></label>
                 <textarea id="sequence-events"></textarea>
             </div>
+            
             <div class="form-group">
                 <label for="make-safe"><strong>What can we do to make safe immediately?</strong></label>
                 <textarea id="make-safe"></textarea>
             </div>
+            
             <div class="form-group">
                 <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
                 <select id="swp-up-to-date">
@@ -177,6 +202,8 @@
                     <option value="no">no</option>
                 </select>
             </div>
+        </div>
+        <div class="pdf-page-section">
             <div class="form-group">
                 <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
                 <select id="training-up-to-date">
@@ -185,6 +212,7 @@
                     <option value="no">no</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
                 <select id="correct-ppe">
@@ -193,8 +221,8 @@
                     <option value="no">no</option>
                 </select>
             </div>
-        
-        </div> <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
+        </div>
+        <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
 
     </div>
 
@@ -205,51 +233,47 @@
                 window.print();
                 return;
             }
-
-            const element = document.getElementById('pdf-capture-area'); 
+            
+            const sections = document.querySelectorAll('.pdf-page-section'); 
             const button = document.querySelector('.submit-btn');
             
             button.style.display = 'none';
 
-            // Use html2canvas to convert the area to an image
-            html2canvas(element, { 
-                scale: 3, 
-                scrollY: -window.scrollY
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-                
-                const pdfWidth = 210; // A4 width
-                const pdfHeight = 297; // A4 height
-                
-                const imgWidth = pdfWidth - 10; 
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                let heightLeft = imgHeight;
-                let position = 5; // Top margin of 5mm
-                
-                // FINAL FIX: Define a buffer to prevent text cutoff, added to the A4 height calculation
-                const PAGE_BREAK_BUFFER_MM = 15; 
-                const PAGE_BREAK_HEIGHT = pdfHeight - PAGE_BREAK_BUFFER_MM; // Reduced page height for safety
+            let pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pdfWidth = 210; 
+            const pdfHeight = 297; 
+            const margin = 10; 
 
-                // 1. Add first page
-                pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight); 
-                heightLeft -= PAGE_BREAK_HEIGHT;
+            // Counter to handle the first page creation (which doesn't need pdf.addPage())
+            let firstPage = true; 
 
-                // 2. Loop to add remaining content to new pages
-                while (heightLeft > -imgHeight) {
-                    // Calculate position: current height left minus total image height
-                    position = heightLeft - imgHeight + (PAGE_BREAK_BUFFER_MM / 2); // Add half buffer to shift content down
-                    
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight);
-                    
-                    // Subtract the reduced page height for the next iteration
-                    heightLeft -= PAGE_BREAK_HEIGHT;
-                }
+            // Loop through each structured section
+            sections.forEach(function(section) {
                 
-                pdf.save("Safety_Incident_Report.pdf");
-                button.style.display = 'block';
+                html2canvas(section, { 
+                    scale: 3, // High scale for resolution
+                    useCORS: true 
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                    
+                    const imgWidth = pdfWidth - (margin * 2); // 190mm wide
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    // If it's not the first page, add a new one before adding content
+                    if (!firstPage) {
+                        pdf.addPage();
+                    }
+                    
+                    // Add the image (the content of the current section) to the PDF
+                    pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight); 
+                    firstPage = false; 
+
+                    // Check if all sections have been processed
+                    if (section === sections[sections.length - 1]) {
+                        pdf.save("Safety_Incident_Report.pdf");
+                        button.style.display = 'block';
+                    }
+                });
             });
         }
     </script>
