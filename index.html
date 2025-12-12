@@ -66,23 +66,193 @@
             background-color: #1e7e34;
         }
         
-        /* CSS FIXES: Ensures elements have space and defines the invisible break marker */
+        /* FINAL CSS FIXES: Removed ineffective page-break rules, keeping simple margins */
         .form-group {
-            margin-top: 25px; /* Adds space between questions */
+            margin-top: 25px; 
             margin-bottom: 15px; 
-            /* page-break-inside is often ignored by the library, but we keep it */
-            page-break-inside: avoid;
-            page-break-after: auto;
         }
         
-        /* Defines the invisible marker used by the JS to force a page break */
-        .page-break-marker {
-            height: 1px; 
-            background-color: transparent; 
-            margin: 15px 0; 
-        }
-        
-        /* Ensures generous padding around the content for the capture area */
         #pdf-capture-area {
             padding-top: 25px; 
-            padding-bottom: 50px;
+            padding-bottom: 50px; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="survey-content">
+        <div id="pdf-capture-area"> 
+
+            <h1>Safety Incident Message Template</h1>
+            
+            <div class="form-group">
+                <label for="store-number">Store number:</label>
+                <input type="text" id="store-number" placeholder="Enter store number">
+            </div>
+            <div class="form-group">
+                <label for="injury-description"><strong>TM injury description:</strong></label>
+                <textarea id="injury-description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="tm-name">Team member name:</label>
+                <input type="text" id="tm-name">
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <select id="department">
+                    <option value="">Select Department</option>
+                    <option value="GR">GR</option>
+                    <option value="DY">DY</option>
+                    <option value="OL">OL</option>
+                    <option value="SV">SV</option>
+                    <option value="FV">FV</option>
+                    <option value="DL">DL</option>
+                    <option value="MT">MT</option>
+                    <option value="BH">BH</option>
+                    <option value="OH">OH</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tm-position"><strong>Team member Position:</strong></label>
+                <select id="tm-position">
+                    <option value="">Select Position</option>
+                    <option value="Team member">Team member</option>
+                    <option value="Department manager">Department manager</option>
+                    <option value="Store support manager">Store support manager</option>
+                    <option value="Store manager">Store manager</option>
+                    <option value="Coles services team member">Coles services team member</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date-incident">Date of Incident / Injury:</label>
+                <input type="date" id="date-incident">
+            </div>
+            <div class="form-group">
+                <label for="time-incident">Time of incident / injury:</label>
+                <input type="time" id="time-incident">
+            </div>
+            <div class="form-group">
+                <label for="date-report">Date of report /injury:</label>
+                <input type="date" id="date-report">
+            </div>
+            <div class="form-group">
+                <label for="injury-details"><strong>Injury:</strong></label>
+                <textarea id="injury-details"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="first-aid"><strong>First aid?</strong></label>
+                <select id="first-aid">
+                    <option value="">Select Option</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                    <option value="n/a">n/a</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
+                <select id="nurse-called">
+                    <option value="">Select Option</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                    <option value="n/a">n/a</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="incident-review"><strong>Incident Review:</strong></label>
+                <textarea id="incident-review"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="sequence-events"><strong>Sequence of events:</strong></label>
+                <textarea id="sequence-events"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="make-safe"><strong>What can we do to make safe immediately?</strong></label>
+                <textarea id="make-safe"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
+                <select id="swp-up-to-date">
+                    <option value="">Select Option</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
+                <select id="training-up-to-date">
+                    <option value="">Select Option</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
+                <select id="correct-ppe">
+                    <option value="">Select Option</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </div>
+        
+        </div> <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
+
+    </div>
+
+    <script>
+        function exportToPDF() {
+            if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
+                alert("PDF export libraries are missing. Please ensure internet connection.");
+                window.print();
+                return;
+            }
+
+            const element = document.getElementById('pdf-capture-area'); 
+            const button = document.querySelector('.submit-btn');
+            
+            button.style.display = 'none';
+
+            // Use html2canvas to convert the area to an image
+            html2canvas(element, { 
+                scale: 3, 
+                scrollY: -window.scrollY
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = 210; // A4 width
+                const pdfHeight = 297; // A4 height
+                
+                const imgWidth = pdfWidth - 10; 
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                let heightLeft = imgHeight;
+                let position = 5; // Top margin of 5mm
+                
+                // FINAL FIX: Define a buffer to prevent text cutoff, added to the A4 height calculation
+                const PAGE_BREAK_BUFFER_MM = 15; 
+                const PAGE_BREAK_HEIGHT = pdfHeight - PAGE_BREAK_BUFFER_MM; // Reduced page height for safety
+
+                // 1. Add first page
+                pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight); 
+                heightLeft -= PAGE_BREAK_HEIGHT;
+
+                // 2. Loop to add remaining content to new pages
+                while (heightLeft > -imgHeight) {
+                    // Calculate position: current height left minus total image height
+                    position = heightLeft - imgHeight + (PAGE_BREAK_BUFFER_MM / 2); // Add half buffer to shift content down
+                    
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight);
+                    
+                    // Subtract the reduced page height for the next iteration
+                    heightLeft -= PAGE_BREAK_HEIGHT;
+                }
+                
+                pdf.save("Safety_Incident_Report.pdf");
+                button.style.display = 'block';
+            });
+        }
+    </script>
+
+</body>
+</html>
