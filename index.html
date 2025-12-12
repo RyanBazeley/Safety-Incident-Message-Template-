@@ -71,30 +71,17 @@
             margin-top: 25px; 
             margin-bottom: 15px; 
         }
-        
-        /* Ensures the sections are visible and structured for capture */
-        .pdf-page-section {
-            padding-top: 20px;
-            padding-bottom: 20px;
-            /* Add a line to visually separate sections on the web page, remove if not needed */
-            border-bottom: 1px dashed #ccc; 
-        }
-        
-        /* Hides the border on the last section */
-        .pdf-page-section:last-child {
-            border-bottom: none;
-        }
     </style>
 </head>
 <body>
 
     <div class="container" id="survey-content">
         
-        <h1>Safety Incident Message Template</h1>
+        <div id="pdf-capture-area"> 
 
-        <div class="pdf-page-section">
+            <h1>Safety Incident Message Template</h1>
             
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="store-number">Store number:</label>
                 <input type="text" id="store-number" placeholder="Enter store number">
             </div>
@@ -104,12 +91,12 @@
                 <textarea id="injury-description"></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="tm-name">Team member name:</label>
                 <input type="text" id="tm-name">
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="department">Department:</label>
                 <select id="department">
                     <option value="">Select Department</option>
@@ -125,7 +112,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="tm-position"><strong>Team member Position:</strong></label>
                 <select id="tm-position">
                     <option value="">Select Position</option>
@@ -136,8 +123,7 @@
                     <option value="Coles services team member">Coles services team member</option>
                 </select>
             </div>
-        </div>
-        <div class="pdf-page-section">
+
             <div class="form-group">
                 <label for="date-incident">Date of Incident / Injury:</label>
                 <input type="date" id="date-incident">
@@ -153,12 +139,12 @@
                 <input type="date" id="date-report">
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="injury-details"><strong>Injury:</strong></label>
                 <textarea id="injury-details"></textarea>
             </div>
-
-            <div class="form-group">
+            
+            <div class="form-group pdf-break">
                 <label for="first-aid"><strong>First aid?</strong></label>
                 <select id="first-aid">
                     <option value="">Select Option</option>
@@ -168,7 +154,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
                 <select id="nurse-called">
                     <option value="">Select Option</option>
@@ -177,8 +163,7 @@
                     <option value="n/a">n/a</option>
                 </select>
             </div>
-        </div>
-        <div class="pdf-page-section">
+
             <div class="form-group">
                 <label for="incident-review"><strong>Incident Review:</strong></label>
                 <textarea id="incident-review"></textarea>
@@ -188,13 +173,13 @@
                 <label for="sequence-events"><strong>Sequence of events:</strong></label>
                 <textarea id="sequence-events"></textarea>
             </div>
-            
+
             <div class="form-group">
                 <label for="make-safe"><strong>What can we do to make safe immediately?</strong></label>
                 <textarea id="make-safe"></textarea>
             </div>
-            
-            <div class="form-group">
+
+            <div class="form-group pdf-break">
                 <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
                 <select id="swp-up-to-date">
                     <option value="">Select Option</option>
@@ -202,9 +187,8 @@
                     <option value="no">no</option>
                 </select>
             </div>
-        </div>
-        <div class="pdf-page-section">
-            <div class="form-group">
+
+            <div class="form-group pdf-break">
                 <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
                 <select id="training-up-to-date">
                     <option value="">Select Option</option>
@@ -213,7 +197,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
                 <select id="correct-ppe">
                     <option value="">Select Option</option>
@@ -221,7 +205,9 @@
                     <option value="no">no</option>
                 </select>
             </div>
+        
         </div>
+
         <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
 
     </div>
@@ -233,46 +219,55 @@
                 window.print();
                 return;
             }
-            
-            const sections = document.querySelectorAll('.pdf-page-section'); 
+
+            const elements = document.querySelectorAll('.form-group'); // Capture ALL form groups
             const button = document.querySelector('.submit-btn');
             
             button.style.display = 'none';
 
             let pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             const pdfWidth = 210; 
-            const pdfHeight = 297; 
             const margin = 10; 
-
-            // Counter to handle the first page creation (which doesn't need pdf.addPage())
-            let firstPage = true; 
-
-            // Loop through each structured section
-            sections.forEach(function(section) {
+            let cursorY = 10; // Start Y position for drawing content on the PDF
+            
+            // Capture the H1 header separately on the first page
+            const h1Element = document.querySelector('h1');
+            html2canvas(h1Element, { scale: 3 }).then(h1Canvas => {
+                const h1ImgData = h1Canvas.toDataURL('image/jpeg', 0.9);
+                const h1ImgWidth = pdfWidth - (margin * 2); 
+                const h1ImgHeight = (h1Canvas.height * h1ImgWidth) / h1Canvas.width;
                 
-                html2canvas(section, { 
-                    scale: 3, // High scale for resolution
-                    useCORS: true 
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                    
-                    const imgWidth = pdfWidth - (margin * 2); // 190mm wide
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    
-                    // If it's not the first page, add a new one before adding content
-                    if (!firstPage) {
-                        pdf.addPage();
-                    }
-                    
-                    // Add the image (the content of the current section) to the PDF
-                    pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight); 
-                    firstPage = false; 
+                pdf.addImage(h1ImgData, 'JPEG', margin, cursorY, h1ImgWidth, h1ImgHeight);
+                cursorY += h1ImgHeight + 10; // Move cursor down below the header + spacing
 
-                    // Check if all sections have been processed
-                    if (section === sections[sections.length - 1]) {
-                        pdf.save("Safety_Incident_Report.pdf");
-                        button.style.display = 'block';
-                    }
+                // Now loop through all form groups
+                elements.forEach((element, index) => {
+                    html2canvas(element, { scale: 3 }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                        const imgWidth = pdfWidth - (margin * 2); 
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        
+                        // Check if adding this element will exceed the remaining space on the page (280mm max)
+                        // This prevents any element from being cut off.
+                        const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
+                        
+                        if (cursorY + imgHeight > maxPageY) {
+                            pdf.addPage();
+                            cursorY = margin; // Reset cursor to top of new page
+                        }
+                        
+                        // Add the captured image of the current form group
+                        pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
+                        
+                        // Move cursor down for the next element, plus padding
+                        cursorY += imgHeight + 5; 
+
+                        // When the last element is processed, save the PDF
+                        if (index === elements.length - 1) {
+                            pdf.save("Safety_Incident_Report.pdf");
+                            button.style.display = 'block';
+                        }
+                    });
                 });
             });
         }
