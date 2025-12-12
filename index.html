@@ -29,11 +29,12 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        .form-group {
-           .form-group {
-    margin-top: 35px;    /* INCREASED: Adds guaranteed space above each question block */
-    margin-bottom: 15px; /* Keeps space below the question block */
-}        }
+.form-group {
+    margin-top: 25px;    /* Slightly reduced space, relying on the page-break fix */
+    margin-bottom: 15px; 
+    page-break-inside: avoid;
+    page-break-after: auto;
+}}}        }
         .form-group label {
             display: block;
             margin-bottom: 5px;
