@@ -30,8 +30,10 @@
             margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 15px;
-        }
+           .form-group {
+    margin-top: 35px;    /* INCREASED: Adds guaranteed space above each question block */
+    margin-bottom: 15px; /* Keeps space below the question block */
+}        }
         .form-group label {
             display: block;
             margin-bottom: 5px;
@@ -70,9 +72,7 @@
         }
         
         /* FIX: Adds padding to the capture area to prevent text cutoff on PDF page breaks */
-        #pdf-capture-area {
-            padding-top: 20px; 
-            padding-bottom: 30px; 
+   
         }
     </style>
 </head>
