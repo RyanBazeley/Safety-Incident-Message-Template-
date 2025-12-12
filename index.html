@@ -8,10 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    #pdf-capture-area {
-            padding-top: 20px; /* Adds space at the top of the page */
-            padding-bottom: 30px; /* Adds space at the bottom of the page */
-        }style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -70,6 +67,12 @@
         }
         .submit-btn:hover {
             background-color: #1e7e34;
+        }
+        
+        /* FIX: Adds padding to the capture area to prevent text cutoff on PDF page breaks */
+        #pdf-capture-area {
+            padding-top: 20px; 
+            padding-bottom: 30px; 
         }
     </style>
 </head>
@@ -212,24 +215,25 @@
     <script>
         function exportToPDF() {
             if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
+                // If libraries fail to load (no internet), alert the user
                 alert("PDF export libraries are missing. Please ensure internet connection.");
                 window.print();
                 return;
             }
 
-            // Target the new container ID
+            // Target the dedicated container ID for capture
             const element = document.getElementById('pdf-capture-area'); 
             const button = document.querySelector('.submit-btn');
             
-            // Hide the button
+            // Hide the button during processing
             button.style.display = 'none';
 
             // Use html2canvas to convert the area to an image
             html2canvas(element, { 
                 scale: 3, // Increased scale for better mobile resolution
-                scrollY: -window.scrollY // Start capture from the top
+                scrollY: -window.scrollY // Start capture from the very top of the content
             }).then(canvas => {
-                // Convert canvas to a JPEG data URL for smaller file size
+                // Convert canvas to a JPEG data URL
                 const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
                 
@@ -241,7 +245,7 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 let heightLeft = imgHeight;
-                let position = 5; // Start 5mm down (top margin)
+                let position = 5; // Top margin of 5mm
 
                 // 1. Add first page
                 pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight); 
