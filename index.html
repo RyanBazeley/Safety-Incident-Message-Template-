@@ -43,38 +43,31 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            /* CRITICAL FIX: Maximize padding for full visibility within the grey box */
-            padding: 50px 50px; 
+            /* Taller boxes and vertical centering fix */
+            padding: 14px 10px; 
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box; 
-            line-height: 10em; /* Ensures text and selection are fully visible */
+            line-height: 1.4em; 
         }
 
-        /* TARGETING TEXT AREAS */
+        /* TARGETING TEXT AREAS (For multi-line text boxes) */
         .form-group textarea {
             resize: vertical;
-            min-height: 50px; 
-        }
-
-        /* TARGETING SMALL TEXT INPUTS */
-        .form-group .small-input {
-            width: 100%;
-            padding: 50px; 
-            box-sizing: border-box; 
+            min-height: 120px;
         }
 
         .submit-btn {
             display: block;
             width: 100%;
-            padding: 50px;
+            padding: 10px;
             background-color: #28a745; 
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
-            margin-top: 30px;
+            font-size: 16px;
+            margin-top: 20px;
         }
         .submit-btn:hover {
             background-color: #1e7e34;
@@ -97,7 +90,7 @@
             
             <div class="form-group">
                 <label for="store-name-number">Store Name And Number:</label>
-                <input type="text" id="store-name-number" class="small-input">
+                <input type="text" id="store-name-number">
             </div>
 
             <div class="form-group">
@@ -107,7 +100,7 @@
 
             <div class="form-group">
                 <label for="tm-name">Team member name:</label>
-                <input type="text" id="tm-name" class="small-input">
+                <input type="text" id="tm-name">
             </div>
 
             <div class="form-group">
@@ -128,7 +121,7 @@
 
             <div class="form-group">
                 <label for="shift-start">What time did they start their shift?</label>
-                <input type="time" id="shift-start" class="small-input">
+                <input type="time" id="shift-start">
             </div>
 
             <div class="form-group">
@@ -142,6 +135,7 @@
                     <option value="">Select Option</option>
                     <option value="yes">yes</option>
                     <option value="no">no</option>
+                    <option value="n/a">n/a</option>
                 </select>
             </div>
 
@@ -151,17 +145,18 @@
                     <option value="">Select Option</option>
                     <option value="yes">yes</option>
                     <option value="no">no</option>
+                    <option value="n/a">n/a</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="immediate-actions">Immediate Actions:</label>
-                <input type="text" id="immediate-actions" class="small-input">
+                <input type="text" id="immediate-actions">
             </div>
 
             <div class="form-group">
                 <label for="corrective-details">Corrective Actions:</label>
-                <input type="text" id="corrective-details" class="small-input" placeholder="e.g., Follow up training scheduled, equipment replaced.">
+                <input type="text" id="corrective-details" placeholder="e.g., Follow up training scheduled, equipment replaced.">
             </div>
         
         </div>
@@ -210,7 +205,7 @@
                         // Check if adding this element will exceed the remaining space on the page
                         const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
                         
-                        // Use a 30mm buffer check to ensure we break early enough
+                        // CRITICAL FIX: Add 30mm buffer check to ensure we break early enough
                         if (cursorY + imgHeight + 30 > maxPageY) { 
                             pdf.addPage();
                             cursorY = margin; // Reset cursor to top of new page
@@ -219,8 +214,8 @@
                         // Add the captured image of the current form group
                         pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
                         
-                        // Move cursor down for the next element, PLUS the 30MM buffer
-                        cursorY += imgHeight + 20; 
+                        // CRITICAL FIX: Move cursor down for the next element, PLUS the 30MM buffer
+                        cursorY += imgHeight + 30; 
 
                         elementsProcessed++;
                         // 3. When the last element is processed, save the PDF
