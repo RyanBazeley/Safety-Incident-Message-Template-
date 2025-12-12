@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Incident Message Template</title>
+    <title>Safety Incident Report</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -35,21 +35,34 @@
             font-weight: bold;
             color: #555;
         }
+        
+        /* TARGETING ALL INPUTS, DROPDOWNS, AND TEXTAREAS */
         .form-group input[type="text"],
-        .form-group textarea,
-        .form-group select,
         .form-group input[type="date"],
-        .form-group input[type="time"] {
+        .form-group input[type="time"],
+        .form-group select,
+        .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px 10px; /* Taller boxes */
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box; 
+            line-height: 1.4em; /* Prevents text clipping */
         }
+
+        /* TARGETING TEXT AREAS */
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 120px; /* Large Text box */
         }
+
+        /* TARGETING SMALL TEXT INPUTS (Specific request for smaller boxes, adjusting height for visual separation) */
+        .form-group .small-input {
+            width: 100%;
+            padding: 10px; 
+            box-sizing: border-box; 
+        }
+
         .submit-btn {
             display: block;
             width: 100%;
@@ -66,7 +79,7 @@
             background-color: #1e7e34;
         }
         
-        /* CSS FIX: Ensures elements have standard spacing */
+        /* Structural CSS for spacing */
         .form-group {
             margin-top: 25px; 
             margin-bottom: 15px; 
@@ -81,22 +94,22 @@
 
             <h1>Safety Incident Message Template</h1>
             
-            <div class="form-group pdf-break">
-                <label for="store-number">Store number:</label>
-                <input type="text" id="store-number" placeholder="Enter store number">
+            <div class="form-group">
+                <label for="store-name-number">Store Name And Number:</label>
+                <input type="text" id="store-name-number" class="small-input">
             </div>
 
             <div class="form-group">
-                <label for="injury-description"><strong>TM injury description:</strong></label>
-                <textarea id="injury-description"></textarea>
+                <label for="date-incident">Date of Incident / Injury:</label>
+                <input type="date" id="date-incident">
             </div>
 
-            <div class="form-group pdf-break">
+            <div class="form-group">
                 <label for="tm-name">Team member name:</label>
-                <input type="text" id="tm-name">
+                <input type="text" id="tm-name" class="small-input">
             </div>
 
-            <div class="form-group pdf-break">
+            <div class="form-group">
                 <label for="department">Department:</label>
                 <select id="department">
                     <option value="">Select Department</option>
@@ -112,40 +125,18 @@
                 </select>
             </div>
 
-            <div class="form-group pdf-break">
-                <label for="tm-position"><strong>Team member Position:</strong></label>
-                <select id="tm-position">
-                    <option value="">Select Position</option>
-                    <option value="Team member">Team member</option>
-                    <option value="Department manager">Department manager</option>
-                    <option value="Store support manager">Store support manager</option>
-                    <option value="Store manager">Store manager</option>
-                    <option value="Coles services team member">Coles services team member</option>
-                </select>
+            <div class="form-group">
+                <label for="shift-start">What time did they start their shift?</label>
+                <input type="time" id="shift-start" class="small-input">
             </div>
 
             <div class="form-group">
-                <label for="date-incident">Date of Incident / Injury:</label>
-                <input type="date" id="date-incident">
-            </div>
-
-            <div class="form-group">
-                <label for="time-incident">Time of incident / injury:</label>
-                <input type="time" id="time-incident">
-            </div>
-
-            <div class="form-group">
-                <label for="date-report">Date of report /injury:</label>
-                <input type="date" id="date-report">
-            </div>
-
-            <div class="form-group pdf-break">
-                <label for="injury-details"><strong>Injury:</strong></label>
-                <textarea id="injury-details"></textarea>
+                <label for="injury-description">TM injury description (What Happened And Where):</label>
+                <textarea id="injury-description"></textarea>
             </div>
             
-            <div class="form-group pdf-break">
-                <label for="first-aid"><strong>First aid?</strong></label>
+            <div class="form-group">
+                <label for="first-aid">First aid?</label>
                 <select id="first-aid">
                     <option value="">Select Option</option>
                     <option value="yes">yes</option>
@@ -154,8 +145,8 @@
                 </select>
             </div>
 
-            <div class="form-group pdf-break">
-                <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
+            <div class="form-group">
+                <label for="nurse-called">InjuryCare nurse called?</label>
                 <select id="nurse-called">
                     <option value="">Select Option</option>
                     <option value="yes">yes</option>
@@ -165,41 +156,13 @@
             </div>
 
             <div class="form-group">
-                <label for="incident-review"><strong>Incident Review:</strong></label>
-                <textarea id="incident-review"></textarea>
+                <label for="immediate-actions">Immediate Actions:</label>
+                <input type="text" id="immediate-actions" class="small-input">
             </div>
 
             <div class="form-group">
-                <label for="sequence-events"><strong>Sequence of events:</strong></label>
-                <textarea id="sequence-events"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="make-safe"><strong>What can we do to make safe immediately?</strong></label>
-                <textarea id="make-safe"></textarea>
-            </div>
-
-            <div class="form-group pdf-break">
-                <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
-                <select id="swp-up-to-date">
-                    <option value="">Select Option</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                </select>
-            </div>
-
-            <div class="form-group pdf-break">
-                <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
-                <select id="training-up-to-date">
-                    <option value="">Select Option</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                </select>
-            </div>
-
-            <div class="form-group pdf-break">
-                <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
-                <select id="correct-ppe">
+                <label for="corrective-actions">Corrective Actions:</label>
+                <select id="corrective-actions">
                     <option value="">Select Option</option>
                     <option value="yes">yes</option>
                     <option value="no">no</option>
@@ -220,7 +183,8 @@
                 return;
             }
 
-            const elements = document.querySelectorAll('.form-group'); // Capture ALL form groups
+            // Target all form groups for sequential capture
+            const elements = document.querySelectorAll('.form-group'); 
             const button = document.querySelector('.submit-btn');
             
             button.style.display = 'none';
@@ -230,7 +194,7 @@
             const margin = 10; 
             let cursorY = 10; // Start Y position for drawing content on the PDF
             
-            // Capture the H1 header separately on the first page
+            // 1. Capture and add the H1 header (Page Title)
             const h1Element = document.querySelector('h1');
             html2canvas(h1Element, { scale: 3 }).then(h1Canvas => {
                 const h1ImgData = h1Canvas.toDataURL('image/jpeg', 0.9);
@@ -240,15 +204,15 @@
                 pdf.addImage(h1ImgData, 'JPEG', margin, cursorY, h1ImgWidth, h1ImgHeight);
                 cursorY += h1ImgHeight + 10; // Move cursor down below the header + spacing
 
-                // Now loop through all form groups
+                // 2. Loop through all form groups (the questions)
+                let elementsProcessed = 0;
                 elements.forEach((element, index) => {
                     html2canvas(element, { scale: 3 }).then(canvas => {
                         const imgData = canvas.toDataURL('image/jpeg', 0.9);
                         const imgWidth = pdfWidth - (margin * 2); 
                         const imgHeight = (canvas.height * imgWidth) / canvas.width;
                         
-                        // Check if adding this element will exceed the remaining space on the page (280mm max)
-                        // This prevents any element from being cut off.
+                        // Check if adding this element will exceed the remaining space on the page
                         const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
                         
                         if (cursorY + imgHeight > maxPageY) {
@@ -262,8 +226,9 @@
                         // Move cursor down for the next element, plus padding
                         cursorY += imgHeight + 5; 
 
-                        // When the last element is processed, save the PDF
-                        if (index === elements.length - 1) {
+                        elementsProcessed++;
+                        // 3. When the last element is processed, save the PDF
+                        if (elementsProcessed === elements.length) {
                             pdf.save("Safety_Incident_Report.pdf");
                             button.style.display = 'block';
                         }
