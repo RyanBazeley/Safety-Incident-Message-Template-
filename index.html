@@ -209,7 +209,7 @@
                         // Check if adding this element will exceed the remaining space on the page
                         const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
                         
-                        if (cursorY + imgHeight > maxPageY) {
+                        if (cursorY + imgHeight + 30 > maxPageY) { // ADD 30MM BUFFER CHECK HERE
                             pdf.addPage();
                             cursorY = margin; // Reset cursor to top of new page
                         }
@@ -217,8 +217,8 @@
                         // Add the captured image of the current form group
                         pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
                         
-                        // Move cursor down for the next element, plus padding
-                        cursorY += imgHeight + 15; 
+                        // Move cursor down for the next element, PLUS the 30MM buffer
+                        cursorY += imgHeight + 30; 
 
                         elementsProcessed++;
                         // 3. When the last element is processed, save the PDF
