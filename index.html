@@ -30,11 +30,14 @@
             margin-bottom: 20px;
         }
 .form-group {
-    margin-top: 25px;    /* Slightly reduced space, relying on the page-break fix */
+   .form-group {
+    /* CRITICAL FIX: Increased top margin to compensate for label height and cut-off */
+    margin-top: 50px; 
     margin-bottom: 15px; 
+    /* Keep page-break rules in place for maximum compatibility */
     page-break-inside: avoid;
     page-break-after: auto;
-}}}        }
+}}}}        }
         .form-group label {
             display: block;
             margin-bottom: 5px;
