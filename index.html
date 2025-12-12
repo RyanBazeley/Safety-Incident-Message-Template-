@@ -35,38 +35,21 @@
             font-weight: bold;
             color: #555;
         }
-        
-        /* GENERAL INPUT STYLING (Applies to all inputs, dropdowns, and textareas) */
         .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="time"],
+        .form-group textarea,
         .form-group select,
-        .form-group textarea {
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box; 
-            /* FIX 1: Ensure single-line text is visible and centered vertically */
-            line-height: 1.4; 
         }
-        
-        /* TARGETING SINGLE-LINE TEXT INPUTS (Store number, Team member name, etc.) */
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="time"],
-        .form-group select {
-             /* FIX 2: Increase padding for taller boxes (e.g., Store number, TM name) */
-            padding: 12px 10px; 
-        }
-
-        /* TARGETING TEXT AREAS (TM injury description, Incident Review, etc.) */
         .form-group textarea {
             resize: vertical;
-             /* FIX 3: Increase default height for text areas (TM injury description) */
-            min-height: 100px; 
+            min-height: 80px;
         }
-
         .submit-btn {
             display: block;
             width: 100%;
@@ -83,25 +66,22 @@
             background-color: #1e7e34;
         }
         
-        /* Other Structural CSS */
+        /* CSS FIX: Ensures elements have standard spacing */
         .form-group {
             margin-top: 25px; 
             margin-bottom: 15px; 
-        }
-        #pdf-capture-area {
-            padding-top: 25px; 
-            padding-bottom: 50px; 
         }
     </style>
 </head>
 <body>
 
     <div class="container" id="survey-content">
+        
         <div id="pdf-capture-area"> 
 
             <h1>Safety Incident Message Template</h1>
             
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="store-number">Store number:</label>
                 <input type="text" id="store-number" placeholder="Enter store number">
             </div>
@@ -111,12 +91,12 @@
                 <textarea id="injury-description"></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="tm-name">Team member name:</label>
                 <input type="text" id="tm-name">
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="department">Department:</label>
                 <select id="department">
                     <option value="">Select Department</option>
@@ -132,7 +112,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="tm-position"><strong>Team member Position:</strong></label>
                 <select id="tm-position">
                     <option value="">Select Position</option>
@@ -159,12 +139,12 @@
                 <input type="date" id="date-report">
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="injury-details"><strong>Injury:</strong></label>
                 <textarea id="injury-details"></textarea>
             </div>
             
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="first-aid"><strong>First aid?</strong></label>
                 <select id="first-aid">
                     <option value="">Select Option</option>
@@ -174,7 +154,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="nurse-called"><strong>InjuryCare nurse called?</strong></label>
                 <select id="nurse-called">
                     <option value="">Select Option</option>
@@ -199,7 +179,7 @@
                 <textarea id="make-safe"></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="swp-up-to-date"><strong>Department SWP’s up to date for tasks being performed by injured TM?</strong></label>
                 <select id="swp-up-to-date">
                     <option value="">Select Option</option>
@@ -208,7 +188,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="training-up-to-date"><strong>Training and swp’s are up to date.</strong></label>
                 <select id="training-up-to-date">
                     <option value="">Select Option</option>
@@ -217,7 +197,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group pdf-break">
                 <label for="correct-ppe"><strong>Correct equipment / PPE being used?</strong></label>
                 <select id="correct-ppe">
                     <option value="">Select Option</option>
@@ -240,7 +220,7 @@
                 return;
             }
 
-            const elements = document.querySelectorAll('.form-group'); 
+            const elements = document.querySelectorAll('.form-group'); // Capture ALL form groups
             const button = document.querySelector('.submit-btn');
             
             button.style.display = 'none';
@@ -248,8 +228,9 @@
             let pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             const pdfWidth = 210; 
             const margin = 10; 
-            let cursorY = 10; 
+            let cursorY = 10; // Start Y position for drawing content on the PDF
             
+            // Capture the H1 header separately on the first page
             const h1Element = document.querySelector('h1');
             html2canvas(h1Element, { scale: 3 }).then(h1Canvas => {
                 const h1ImgData = h1Canvas.toDataURL('image/jpeg', 0.9);
@@ -257,25 +238,31 @@
                 const h1ImgHeight = (h1Canvas.height * h1ImgWidth) / h1Canvas.width;
                 
                 pdf.addImage(h1ImgData, 'JPEG', margin, cursorY, h1ImgWidth, h1ImgHeight);
-                cursorY += h1ImgHeight + 10; 
+                cursorY += h1ImgHeight + 10; // Move cursor down below the header + spacing
 
+                // Now loop through all form groups
                 elements.forEach((element, index) => {
                     html2canvas(element, { scale: 3 }).then(canvas => {
                         const imgData = canvas.toDataURL('image/jpeg', 0.9);
                         const imgWidth = pdfWidth - (margin * 2); 
                         const imgHeight = (canvas.height * imgWidth) / canvas.width;
                         
+                        // Check if adding this element will exceed the remaining space on the page (280mm max)
+                        // This prevents any element from being cut off.
                         const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
                         
                         if (cursorY + imgHeight > maxPageY) {
                             pdf.addPage();
-                            cursorY = margin; 
+                            cursorY = margin; // Reset cursor to top of new page
                         }
                         
+                        // Add the captured image of the current form group
                         pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
                         
+                        // Move cursor down for the next element, plus padding
                         cursorY += imgHeight + 5; 
 
+                        // When the last element is processed, save the PDF
                         if (index === elements.length - 1) {
                             pdf.save("Safety_Incident_Report.pdf");
                             button.style.display = 'block';
