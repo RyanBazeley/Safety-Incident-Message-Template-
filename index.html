@@ -216,41 +216,55 @@
     </div>
 
     <script>
+        <script>
         function exportToPDF() {
-            // Check if jsPDF and html2canvas are available
             if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
-                alert("PDF export libraries are still missing. Please ensure the internet connection is stable or try the browser's native print function.");
+                alert("PDF export libraries are missing. Please ensure internet connection.");
                 window.print();
                 return;
             }
 
             const element = document.getElementById('survey-content');
-            
-            // Temporarily hide the button before converting to PDF
             const button = document.querySelector('.submit-btn');
+            
+            // 1. Temporarily hide the button before conversion
             button.style.display = 'none';
 
-            // Convert the HTML content to a canvas image
+            // 2. Convert HTML to canvas
             html2canvas(element, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jspdf.jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-                const imgProps= pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                // Calculate height to maintain aspect ratio
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; 
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
                 
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                // Dimensions for A4 page in mm
+                const pdfWidth = 210; // A4 width
+                const pdfHeight = 297; // A4 height
+                
+                // Calculate size based on image dimensions
+                const imgWidth = pdfWidth;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // 3. Add image to PDF, adding new pages as needed
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pdfHeight;
+                }
+                
+                // 4. Save and Restore
                 pdf.save("Safety_Incident_Report.pdf");
-                
-                // Restore the button after conversion
                 button.style.display = 'block';
             });
         }
     </script>
+</body>
+</html>    </script>
 
 </body>
 </html>
