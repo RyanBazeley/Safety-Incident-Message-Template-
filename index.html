@@ -84,6 +84,7 @@
 <body>
 
     <div class="container" id="survey-content">
+    <div id="pdf-capture-area">       
         <h1>Safety Incident Message Template</h1>
         
         <div class="form-group">
@@ -224,42 +225,50 @@
                 return;
             }
 
-            const element = document.getElementById('survey-content');
+            // Target the new container ID we added
+            const element = document.getElementById('pdf-capture-area'); 
             const button = document.querySelector('.submit-btn');
             
-            // 1. Temporarily hide the button before conversion
+            // Hide the button
             button.style.display = 'none';
 
-            // 2. Convert HTML to canvas
-            html2canvas(element, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            // Use html2canvas to convert the area to an image
+            html2canvas(element, { 
+                scale: 3, // Increased scale for better mobile resolution
+                scrollY: -window.scrollY // Start capture from the top
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
                 
-                // Dimensions for A4 page in mm
-                const pdfWidth = 210; // A4 width
-                const pdfHeight = 297; // A4 height
+                const pdfWidth = 210; // A4 width in mm
+                const pdfHeight = 297; // A4 height in mm
                 
-                // Calculate size based on image dimensions
-                const imgWidth = pdfWidth;
+                // Calculate dimensions needed to fit the content image
+                const imgWidth = pdfWidth - 10; // 5mm margin on each side
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 let heightLeft = imgHeight;
-                let position = 0;
+                let position = 5; // Start 5mm down (top margin)
 
-                // 3. Add image to PDF, adding new pages as needed
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                // 1. Add first page
+                pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight); 
                 heightLeft -= pdfHeight;
 
-                while (heightLeft >= 0) {
+                // 2. Loop to add remaining content to new pages
+                while (heightLeft > -imgHeight) {
                     position = heightLeft - imgHeight;
                     pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    pdf.addImage(imgData, 'JPEG', 5, position, imgWidth, imgHeight);
                     heightLeft -= pdfHeight;
                 }
                 
-                // 4. Save and Restore
+                // Save and Restore
                 pdf.save("Safety_Incident_Report.pdf");
                 button.style.display = 'block';
+            });
+        }
+    </script>        <script>
+      
             });
         }
     </script>
