@@ -1,93 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Form Validation</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Safety Incident Message Template</title>
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-
-  #commentContainer {
-    display: none;
-    margin-top: 10px;
-  }
-
-  #commentError {
-    color: red;
-    display: none;
-    margin-top: 5px;
-  }
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
-
 <body>
+  <div id="app"></div>
 
-<form id="myForm">
+  <script>
+    (function () {
+      function el(tag, props, children) {
+        var node = document.createElement(tag);
+        props = props || {};
+        Object.keys(props).forEach(function (k) {
+          if (k === "text") node.textContent = props[k];
+          else node.setAttribute(k, props[k]);
+        });
+        (children || []).forEach(function (c) { node.appendChild(c); });
+        return node;
+      }
 
-  <p>Please select an option:</p>
+      function applyStyles(node, styles) {
+        Object.keys(styles).forEach(function (k) { node.style[k] = styles[k]; });
+      }
 
-  <label>
-    <input type="radio" name="option" value="yes">
-    Yes
-  </label>
+      function baseControlStyle() {
+        return {
+          width: "100%",
+          boxSizing: "border-box",
+          padding: "12px",
+          borderRadius: "10px",
+          border: "1px solid #374151",
+          outline: "none",
+          backgroundColor: "#0b1220",
+          color: "#f9fafb",
+          fontSize: "16px",
+          lineHeight: "22px"
+        };
+      }
 
-  <label>
-    <input type="radio" name="option" value="no">
-    No
-  </label>
+      function fieldRow(labelText, control) {
+        var row = el("div");
+        applyStyles(row, {
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          padding: "12px",
+          borderRadius: "12px",
+          backgroundColor: "#111827",
+          border: "1px solid #1f2937"
+        });
 
-  <div id="commentContainer">
-    <label for="comment"><strong>Why?</strong></label><br>
-    <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
-    <div id="commentError">
-      Please explain why no option was selected.
-    </div>
-  </div>
+        var label = el("div", { text: labelText });
+        applyStyles(label, {
+          fontSize: "15px",
+          lineHeight: "20px",
+          fontWeight: "700",
+          color: "#f9fafb",
+          wordBreak: "break-word"
+        });
 
-  <br>
-  <button type="submit">Submit</button>
+        row.appendChild(label);
+        row.appendChild(control);
+        return row;
+      }
 
-</form>
+      function inputText(placeholder) {
+        var i = el("input", { type: "text", placeholder: placeholder || "" });
+        applyStyles(i, baseControlStyle());
+        return i;
+      }
 
-<script>
-const form = document.getElementById("myForm");
-const radios = document.querySelectorAll('input[name="option"]');
-const commentContainer = document.getElementById("commentContainer");
-const comment = document.getElementById("comment");
-const commentError = document.getElementById("commentError");
+      function inputDate() {
+        var i = el("input", { type: "date" });
+        applyStyles(i, baseControlStyle());
+        return i;
+      }
 
-function checkSelection() {
-  const selected = document.querySelector('input[name="option"]:checked');
+      function inputTime() {
+        var i = el("input", { type: "time" });
+        applyStyles(i, baseControlStyle());
+        return i;
+      }
 
-  if (!selected) {
-    commentContainer.style.display = "block";
-    comment.setAttribute("required", "required");
-  } else {
-    commentContainer.style.display = "none";
-    comment.removeAttribute("required");
-    commentError.style.display = "none";
-  }
-}
+      function selectBox(options) {
+        var s = el("select");
+        applyStyles(s, baseControlStyle());
+        options.forEach(function (opt) {
+          var o = el("option", { value: opt.value, text: opt.label });
+          s.appendChild(o);
+        });
+        return s;
+      }
 
-radios.forEach(radio => {
-  radio.addEventListener("change", checkSelection);
-});
+      function textArea(placeholder) {
+        var t = el("textarea", { placeholder: placeholder || "" });
+        applyStyles(t, baseControlStyle());
+        t.rows = 4;
+        t.addEventListener("input", function () {
+          t.style.height = "auto";
+          t.style.height = Math.min(t.scrollHeight, 420) + "px";
+        });
+        return t;
+      }
 
-form.addEventListener("submit", function(e) {
-  const selected = document.querySelector('input[name="option"]:checked');
+      function buttonStyle(primary) {
+        return {
+          padding: "12px 14px",
+          borderRadius: "12px",
+          border: primary ? "1px solid #2563eb" : "1px solid #374151",
+          backgroundColor: primary ? "#1d4ed8" : "#111827",
+          color: "#f9fafb",
+          fontSize: "16px",
+          fontWeight: "700",
+          cursor: "pointer"
+        };
+      }
 
-  if (!selected) {
-    commentContainer.style.display = "block";
+      function safeText(v) {
+        return (v || "").toString();
+      }
 
-    if (comment.value.trim() === "") {
-      e.preventDefault();
-      commentError.style.display = "block";
-    }
-  }
-});
-</script>
+      function buildPdfBlob(data) {
+        var jsPDF = window.jspdf && window.jspdf.jsPDF;
+        if (!jsPDF) throw new Error("PDF library did not load");
 
+        var doc = new jsPDF({ unit: "pt", format: "a4" });
+
+        var pageWidth = doc.internal.pageSize.getWidth();
+        var pageHeight = doc.internal.pageSize.getHeight();
+
+        var margin = 40;
+        var x = margin;
+        var y = 46;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text("Safety Incident Message Template", x, y);
+
+        y += 18;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text("Generated from the form", x, y);
+
+        y += 22;
+
+        function addField(label, value) {
+          var maxWidth = pageWidth - (margin * 2);
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          var labelLines = doc.splitTextToSize(label, maxWidth);
+          labelLines.forEach(function (line) {
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin;
+            }
+            doc.text(line, x, y);
+            y += 14;
+          });
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(11);
+          var val = value ? value : "";
+          var valueLines = doc.splitTextToSize(val, maxWidth);
+          if (valueLines.length === 0) valueLines = [""];
+          valueLines.forEach(function (line) {
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin;
+            }
+            doc.text(line, x, y);
+            y += 14;
+          });
+
+          y += 8;
+        }
+
+        addField("Store Name And Number", data.storeName);
+        addField("Date of Incident or Injury", data.incidentDate);
+        addField("Team member name", data.teamMember);
+        addField("Department", data.department);
+        addField("What time did they start their shift", data.shiftStart);
+        addField("TM injury description (What Happened And Where)", data.injuryDesc);
+        addField("First aid", data.firstAid);
+        addField("InjuryCare nurse called", data.injuryCare);
+        addField("Immediate Actions", data.immediateActions);
+        addField("Corrective Actions", data.correctiveActions);
+
+        return doc.output("blob");
+      }
+
+      function openPdfInNewTab(blob) {
+        var url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      }
+
+      async function sharePdf(blob, filename) {
+        var file = new File([blob], filename, { type: "application/pdf" });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+          await navigator.share({
+            title: "Safety Incident Message",
+            files: [file]
+          });
+          return true;
+        }
+        return false;
+      }
+
+      var app = document.getElementById("app");
+
+      applyStyles(document.body, {
+        margin: "0",
+        backgroundColor: "#0b1220",
+        color: "#f9fafb",
+        fontFamily: "system-ui, Arial, sans-serif"
+      });
+
+      var shell = el("div");
+      applyStyles(shell, {
+        minHeight: "100vh",
+        padding: "16px",
+        boxSizing: "border-box",
+        display: "flex",
+        justifyContent: "center"
+      });
+
+      var card = el("div");
+      applyStyles(card, {
+        width: "100%",
+        maxWidth: "760px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "14px"
+      });
+
+      var header = el("div");
+      applyStyles(header, {
+        padding: "14px 14px",
+        borderRadius: "16px",
+        backgroundColor: "#111827",
+        border: "1px solid #1f2937"
+      });
+
+      var title = el("div", { text: "Safety Incident Message Template" });
+      applyStyles(title, {
+        fontSize: "20px",
+        lineHeight: "26px",
+        fontWeight: "800",
+        wordBreak: "break-word"
+      });
+
+      var subtitle = el("div", { text: "Export PDF generates a PDF, then opens it so you can share from Safari or the share sheet." });
+      applyStyles(subtitle, {
+        marginTop: "8px",
+        fontSize: "14px",
+        lineHeight: "20px",
+        color: "#cbd5e1",
+        wordBreak: "break-word"
+      });
+
+      header.appendChild(title);
+      header.appendChild(subtitle);
+
+      var form = el("form");
+      applyStyles(form, {
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px"
+      });
+
+      var storeName = inputText("Enter store name and number");
+      var incidentDate = inputDate();
+      var teamMember = inputText("Enter team member name");
+
+      var dept = selectBox([
+        { value: "", label: "Select department" },
+        { value: "GR", label: "GR" },
+        { value: "DY", label: "DY" },
+        { value: "OL", label: "OL" },
+        { value: "SV", label: "SV" },
+        { value: "FV", label: "FV" },
+        { value: "DL", label: "DL" },
+        { value: "MT", label: "MT" },
+        { value: "BH", label: "BH" },
+        { value: "OH", label: "OH" }
+      ]);
+
+      var shiftStart = inputTime();
+      var injuryDesc = textArea("What happened and where");
+
+      var firstAid = selectBox([
+        { value: "", label: "Select" },
+        { value: "yes", label: "yes" },
+        { value: "no", label: "no" },
+        { value: "declined", label: "declined" }
+      ]);
+
+      var injuryCare = selectBox([
+        { value: "", label: "Select" },
+        { value: "yes", label: "yes" },
+        { value: "no", label: "no" },
+        { value: "declined", label: "declined" }
+      ]);
+
+      var immediateActions = textArea("Immediate actions taken");
+      var correctiveActions = textArea("Corrective actions taken");
+
+      form.appendChild(fieldRow("Store Name And Number", storeName));
+      form.appendChild(fieldRow("Date of Incident or Injury", incidentDate));
+      form.appendChild(fieldRow("Team member name", teamMember));
+      form.appendChild(fieldRow("Department", dept));
+      form.appendChild(fieldRow("What time did they start their shift", shiftStart));
+      form.appendChild(fieldRow("TM injury description (What Happened And Where)", injuryDesc));
+      form.appendChild(fieldRow("First aid", firstAid));
+      form.appendChild(fieldRow("InjuryCare nurse called", injuryCare));
+      form.appendChild(fieldRow("Immediate Actions", immediateActions));
+      form.appendChild(fieldRow("Corrective Actions", correctiveActions));
+
+      var actions = el("div");
+      applyStyles(actions, {
+        display: "flex",
+        gap: "10px",
+        flexWrap: "wrap",
+        padding: "12px",
+        borderRadius: "16px",
+        backgroundColor: "#111827",
+        border: "1px solid #1f2937"
+      });
+
+      var exportBtn = el("button", { type: "button", text: "Export PDF" });
+      applyStyles(exportBtn, buttonStyle(true));
+
+      var clearBtn = el("button", { type: "button", text: "Clear" });
+      applyStyles(clearBtn, buttonStyle(false));
+
+      var status = el("div", { text: "" });
+      applyStyles(status, {
+        width: "100%",
+        fontSize: "13px",
+        lineHeight: "18px",
+        color: "#cbd5e1",
+        paddingTop: "4px",
+        wordBreak: "break-word"
+      });
+
+      actions.appendChild(exportBtn);
+      actions.appendChild(clearBtn);
+
+      exportBtn.addEventListener("click", async function () {
+        status.textContent = "";
+        var data = {
+          storeName: safeText(storeName.value),
+          incidentDate: safeText(incidentDate.value),
+          teamMember: safeText(teamMember.value),
+          department: safeText(dept.value),
+          shiftStart: safeText(shiftStart.value),
+          injuryDesc: safeText(injuryDesc.value),
+          firstAid: safeText(firstAid.value),
+          injuryCare: safeText(injuryCare.value),
+          immediateActions: safeText(immediateActions.value),
+          correctiveActions: safeText(correctiveActions.value)
+        };
+
+        try {
+          var blob = buildPdfBlob(data);
+          var filename = "SafetyIncidentMessage.pdf";
+
+          try {
+            var shared = await sharePdf(blob, filename);
+            if (shared) return;
+          } catch (e1) {}
+
+          openPdfInNewTab(blob);
+          status.textContent = "If share is not shown, use the Safari share button in the PDF viewer, or save then share from Files.";
+        } catch (e2) {
+          status.textContent = "PDF export failed. Check that the jsPDF script loaded and you are online.";
+        }
+      });
+
+      clearBtn.addEventListener("click", function () {
+        storeName.value = "";
+        incidentDate.value = "";
+        teamMember.value = "";
+        dept.value = "";
+        shiftStart.value = "";
+        injuryDesc.value = "";
+        firstAid.value = "";
+        injuryCare.value = "";
+        immediateActions.value = "";
+        correctiveActions.value = "";
+        status.textContent = "";
+      });
+
+      card.appendChild(header);
+      card.appendChild(form);
+      card.appendChild(actions);
+      card.appendChild(status);
+      shell.appendChild(card);
+      app.appendChild(shell);
+    })();
+  </script>
 </body>
 </html>
