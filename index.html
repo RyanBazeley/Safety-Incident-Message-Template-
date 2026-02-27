@@ -1,233 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Incident Report</title>
+<meta charset="UTF-8">
+<title>Form Validation</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        
-        /* TARGETING ALL INPUTS, DROPDOWNS, AND TEXTAREAS */
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="time"],
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            /* Taller boxes and vertical centering fix */
-            padding: 14px 10px; 
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box; 
-            line-height: 1.4em; 
-        }
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
 
-        /* TARGETING TEXT AREAS (For multi-line text boxes) */
-        .form-group textarea {
-            resize: vertical;
-            min-height: 150px;
-        }
+  #commentContainer {
+    display: none;
+    margin-top: 10px;
+  }
 
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745; 
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-        .submit-btn:hover {
-            background-color: #1e7e34;
-        }
-        
-        /* Structural CSS for spacing */
-        .form-group {
-            margin-top: 25px; 
-            margin-bottom: 15px; 
-        }
-    </style>
+  #commentError {
+    color: red;
+    display: none;
+    margin-top: 5px;
+  }
+</style>
 </head>
+
 <body>
 
-    <div class="container" id="survey-content">
-        
-        <div id="pdf-capture-area"> 
+<form id="myForm">
 
-            <h1>Safety Incident Message Template</h1>
-            
-            <div class="form-group">
-                <label for="store-name-number">Store Name And Number:</label>
-                <input type="text" id="store-name-number">
-            </div>
+  <p>Please select an option:</p>
 
-            <div class="form-group">
-                <label for="date-incident">Date of Incident / Injury:</label>
-                <input type="date" id="date-incident">
-            </div>
+  <label>
+    <input type="radio" name="option" value="yes">
+    Yes
+  </label>
 
-            <div class="form-group">
-                <label for="tm-name">Team member name:</label>
-                <input type="text" id="tm-name">
-            </div>
+  <label>
+    <input type="radio" name="option" value="no">
+    No
+  </label>
 
-            <div class="form-group">
-                <label for="department">Department:</label>
-                <select id="department">
-                    <option value="">Select Department</option>
-                    <option value="GR">GR</option>
-                    <option value="DY">DY</option>
-                    <option value="OL">OL</option>
-                    <option value="SV">SV</option>
-                    <option value="FV">FV</option>
-                    <option value="DL">DL</option>
-                    <option value="MT">MT</option>
-                    <option value="BH">BH</option>
-                    <option value="OH">OH</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="shift-start">What time did they start their shift?</label>
-                <input type="time" id="shift-start">
-            </div>
-
-            <div class="form-group">
-                <label for="injury-description">TM injury description (What Happened And Where):</label>
-                <textarea id="injury-description"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="first-aid">First aid?</label>
-                <select id="first-aid">
-                    <option value="">Select Option</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                    <option value="n/a">n/a</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="nurse-called">InjuryCare nurse called?</label>
-                <select id="nurse-called">
-                    <option value="">Select Option</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                    <option value="n/a">n/a</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="immediate-actions">Immediate Actions:</label>
-                <input type="text" id="immediate-actions">
-            </div>
-
-            <div class="form-group">
-                <label for="corrective-details">Corrective Actions:</label>
-                <input type="text" id="corrective-details" placeholder="e.g., Follow up training scheduled, equipment replaced.">
-            </div>
-        
-        </div>
-
-        <button class="submit-btn" onclick="exportToPDF()">Export Survey as PDF</button>
-
+  <div id="commentContainer">
+    <label for="comment"><strong>Why?</strong></label><br>
+    <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+    <div id="commentError">
+      Please explain why no option was selected.
     </div>
+  </div>
 
-    <script>
-        function exportToPDF() {
-            if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
-                alert("PDF export libraries are missing. Please ensure internet connection.");
-                window.print();
-                return;
-            }
+  <br>
+  <button type="submit">Submit</button>
 
-            // Target all form groups for sequential capture
-            const elements = document.querySelectorAll('.form-group'); 
-            const button = document.querySelector('.submit-btn');
-            
-            button.style.display = 'none';
+</form>
 
-            let pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const pdfWidth = 210; 
-            const margin = 10; 
-            let cursorY = 10; // Start Y position for drawing content on the PDF
-            
-            // 1. Capture and add the H1 header (Page Title)
-            const h1Element = document.querySelector('h1');
-            html2canvas(h1Element, { scale: 3 }).then(h1Canvas => {
-                const h1ImgData = h1Canvas.toDataURL('image/jpeg', 0.9);
-                const h1ImgWidth = pdfWidth - (margin * 2); 
-                const h1ImgHeight = (h1Canvas.height * h1ImgWidth) / h1Canvas.width;
-                
-                pdf.addImage(h1ImgData, 'JPEG', margin, cursorY, h1ImgWidth, h1ImgHeight);
-                cursorY += h1ImgHeight + 10; // Move cursor down below the header + spacing
+<script>
+const form = document.getElementById("myForm");
+const radios = document.querySelectorAll('input[name="option"]');
+const commentContainer = document.getElementById("commentContainer");
+const comment = document.getElementById("comment");
+const commentError = document.getElementById("commentError");
 
-                // 2. Loop through all form groups (the questions)
-                let elementsProcessed = 0;
-                elements.forEach((element, index) => {
-                    html2canvas(element, { scale: 3 }).then(canvas => {
-                        const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                        const imgWidth = pdfWidth - (margin * 2); 
-                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                        
-                        // Check if adding this element will exceed the remaining space on the page
-                        const maxPageY = pdf.internal.pageSize.getHeight() - margin; 
-                        
-                        // CRITICAL FIX: Add 30mm buffer check to ensure we break early enough
-                        if (cursorY + imgHeight + 30 > maxPageY) { 
-                            pdf.addPage();
-                            cursorY = margin; // Reset cursor to top of new page
-                        }
-                        
-                        // Add the captured image of the current form group
-                        pdf.addImage(imgData, 'JPEG', margin, cursorY, imgWidth, imgHeight); 
-                        
-                        // CRITICAL FIX: Move cursor down for the next element, PLUS the 30MM buffer
-                        cursorY += imgHeight + 30; 
+function checkSelection() {
+  const selected = document.querySelector('input[name="option"]:checked');
 
-                        elementsProcessed++;
-                        // 3. When the last element is processed, save the PDF
-                        if (elementsProcessed === elements.length) {
-                            pdf.save("Safety_Incident_Report.pdf");
-                            button.style.display = 'block';
-                        }
-                    });
-                });
-            });
-        }
-    </script>
+  if (!selected) {
+    commentContainer.style.display = "block";
+    comment.setAttribute("required", "required");
+  } else {
+    commentContainer.style.display = "none";
+    comment.removeAttribute("required");
+    commentError.style.display = "none";
+  }
+}
+
+radios.forEach(radio => {
+  radio.addEventListener("change", checkSelection);
+});
+
+form.addEventListener("submit", function(e) {
+  const selected = document.querySelector('input[name="option"]:checked');
+
+  if (!selected) {
+    commentContainer.style.display = "block";
+
+    if (comment.value.trim() === "") {
+      e.preventDefault();
+      commentError.style.display = "block";
+    }
+  }
+});
+</script>
 
 </body>
 </html>
